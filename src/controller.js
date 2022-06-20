@@ -17,7 +17,6 @@ class Controller {
   static async getRecentlyUpdated(_req, res, next) {
     try {
       const recentlyUpdatedList = await Model.recentlyUpdated();
-
       res.json({ success: true, data: recentlyUpdatedList });
     } catch (err) {
       next(err);
@@ -53,7 +52,7 @@ class Controller {
 
     try {
       const episodes = await Model.getEpisodes(animeId);
-
+      
       res.json({ success: true, data: episodes });
     } catch (err) {
       next(err);
