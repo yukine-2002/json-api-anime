@@ -78,7 +78,6 @@ class Model {
     const { data } = await instance.get(
       `/films/${animeId}/episodes/${episodeId}`
     );
-
     const CORS_API = "https://netime.glitch.me/api/v1/cors";
 
     const sources = data.sources;
@@ -105,7 +104,6 @@ class Model {
 
       if (m3u8.includes("mephimanh")) {
         const m3u8P = m3u8.split("/")[4];
-
         vSource = `https://ima21.xyz/hls/${m3u8P}/playlist.m3u8`;
       } else {
         vSource = m3u8;
@@ -147,7 +145,7 @@ class Model {
 
   static async recommended() {
     const { data } = await axios.get(`${WEBSITE_URL}/hom-nay-xem-gi`);
-
+    
     return parseList(data);
   }
 
@@ -156,7 +154,11 @@ class Model {
 
     return parseList(data);
   }
-
+  static async getMovies(){
+    const { data } = await axios.get(`${WEBSITE_URL}/movie`);
+  
+    return parseListMovie(data);
+  }
   static async scrapeInfo(slug) {
     const { data } = await axios.get(`${WEBSITE_URL}/${slug}`);
 
@@ -270,6 +272,7 @@ const scrapeInfo = async slug => {
     document.querySelector(".film-info-views").textContent
   );
 
+
   const thumbnail = document
     .querySelector('[property="og:image"]')
     .getAttribute("content");
@@ -317,6 +320,31 @@ const parseList = html => {
     );
 
     return { slug, views, name, time, latestEpisode, thumbnail };
+  });
+
+  return list;
+};
+
+const parseListMovie = html => {
+  const { window } = new JSDOM(html);
+  const { document } = window;
+
+  const items = document.querySelectorAll(".movie-item a");
+
+  const list = [...items].map(item => {
+    const url = item.getAttribute("href");
+
+    const slug = urlToSlug(url.split("/")[1]);
+
+    const thumbnail = item.querySelector(".tray-item-thumbnail").dataset.src;
+    const time = item
+      .querySelector(".tray-film-update")
+      ?.textContent.replace(" / ", "/");
+    const name = item.querySelector(".tray-item-title")?.textContent;
+    const views = parseViews(
+      item.querySelector(".tray-film-views")?.textContent
+    );
+    return { slug, views, name, time, thumbnail };
   });
 
   return list;

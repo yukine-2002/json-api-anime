@@ -22,6 +22,15 @@ class Controller {
       next(err);
     }
   }
+  static async getMovie(_req, res, next) {
+    try {
+      const movie = await Model.getMovies();
+      console.log(movie)
+      res.json({ success: true, data: movie });
+    } catch (err) {
+      next(err);
+    }
+  }
 
   static async getInfo(req, res, next) {
     const { slug } = req.params;
@@ -52,7 +61,7 @@ class Controller {
 
     try {
       const episodes = await Model.getEpisodes(animeId);
-      
+
       res.json({ success: true, data: episodes });
     } catch (err) {
       next(err);
@@ -93,7 +102,7 @@ class Controller {
 
   static async search(req, res, next) {
     const { q, limit, page = 1 } = req.query;
-
+    
     try {
       const { data, total } = await Model.search(q, limit);
 
