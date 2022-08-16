@@ -14,6 +14,7 @@ let proxy = corsAnywhere.createServer({
 });
 
 class Controller {
+
   static async getRecentlyUpdated(_req, res, next) {
     try {
       const recentlyUpdatedList = await Model.recentlyUpdated();

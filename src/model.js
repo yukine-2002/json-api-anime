@@ -4,6 +4,7 @@ const { JSDOM } = require("jsdom");
 const { LIMIT } = require("./constants");
 const { toSlug, encodeString } = require("./utils");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+const utf8 = require('utf8');
 
 const instance = axios.create({
   baseURL: process.env.API_URL,
@@ -12,6 +13,9 @@ const instance = axios.create({
     Referer: "https://vuighe.net/idoly-pride"
   }
 });
+
+
+
 
 const WEBSITE_URL = process.env.WEBSITE_URL;
 
@@ -24,10 +28,10 @@ class Model {
     const { window } = new JSDOM(data);
     const { document } = window;
 
-    const slideItems = document.querySelectorAll(".slider-item");
-
-    const list = [...slideItems].map(item => {
-      const thumbnail = item.querySelector(".slider-item-img").dataset.src;
+    const slideItems = document.querySelectorAll(".slider-group .slider-item");
+    console.log(slideItems)
+    const list = [...slideItems].map(item => {  
+      const thumbnail = item.getAttribute("data-src-item");
       const title = item.dataset.title;
       const views = item.dataset.views;
       const slug = toSlug(title);
@@ -73,21 +77,23 @@ class Model {
 
     return episodes;
   }
+  
 
+  
   static async getSource(animeId, episodeId) {
     const { data } = await instance.get(
       `/films/${animeId}/episodes/${episodeId}`
     );
+   
     const CORS_API = "https://netime.glitch.me/api/v1/cors";
 
     const sources = data.sources;
-
+ 
     const whitelistKeys = [];
-
+   
     const sourceKey = Object.keys(sources)
       .filter(key => !whitelistKeys.includes(key))
       .find(key => !!sources[key].length);
-
     let source = sources[sourceKey][0].src;
 
     if (!source) {
@@ -108,14 +114,15 @@ class Model {
       } else {
         vSource = m3u8;
       }
-
+     
       return {
         videoSource: vSource
       };
     }
-
+    
+    
     source = `${CORS_API}/${source}`;
-
+    console.log({s : utf8.decode(source) , v : source})
     return {
       videoSource: source
     };
