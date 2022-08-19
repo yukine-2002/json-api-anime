@@ -119,10 +119,7 @@ class Model {
         videoSource: vSource
       };
     }
-    
-    
     source = `${CORS_API}/${source}`;
-    console.log({s : utf8.decode(source) , v : source})
     return {
       videoSource: source
     };
